@@ -1,34 +1,27 @@
 import express from "express"
-import ollama from "ollama"
 import cors from "cors"
+import dotenv from "dotenv"
 
+import { dbConnect } from "#db/connect"
+import { show, history, chat } from "#controllers/chatController"
+import { listModels } from "#controllers/modelController"
 
 const app = express()
+dotenv.config()
 app.use(cors())
 app.use(express.json())
 
 
-app.post("/chat", async (req, res) => {
-    const { content } = req.body
+//#region Routes
+app.get("/models", listModels)
+app.get("/chat/:id", show)
+app.get("/chats/history", history)
+app.post("/chat", chat)
+//#endregion 
 
-    res.setHeader("Content-Type", "text/plain; charset=utf-8")
-    res.setHeader("Transfer-Encoding", "chunked")
-    console.log(content)
 
-
-    
-    const response = await ollama.chat({
-        model : "llama2-uncensored",
-        messages : [{role : "user", content : content}],
-        stream : true
-    })
-    for await (const part of response) {
-        res.write(part.message.content)
-    }
-    res.end()
-   
+const port = process.env.PORT || 8081
+app.listen(port, () => {
+    dbConnect()
+    console.log(`Server Available on Port: ${port}`)
 })
-
-
-
-app.listen(8080, () => console.log("APP runs on port 8080"))

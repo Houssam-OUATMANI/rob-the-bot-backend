@@ -5,17 +5,26 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21"
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
+    "@types/mongoose": "^5.11.97"
   },
   "scripts": {
-    "dev" : "bun --watch ."
+    "dev": "bun --watch ."
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "mongoose": "^8.4.1",
     "ollama": "^0.5.1"
+  },
+  "imports": {
+    "#controllers/*": "./controllers/*.ts",
+    "#db/*": "./db/*.ts",
+    "#types/*": "./types/*.ts"
   }
 }
