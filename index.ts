@@ -3,7 +3,7 @@ import cors from "cors"
 import dotenv from "dotenv"
 
 import { dbConnect } from "#db/connect"
-import { show, history, chat } from "#controllers/chatController"
+import { show, history, chat, deleteChatById } from "#controllers/chatController"
 import { listModels } from "#controllers/modelController"
 
 const app = express()
@@ -17,6 +17,7 @@ app.get("/models", listModels)
 app.get("/chat/:id", show)
 app.get("/chats/history", history)
 app.post("/chat", chat)
+app.delete("/chat/:id", deleteChatById)
 //#endregion 
 
 

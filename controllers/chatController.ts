@@ -21,6 +21,13 @@ async function history(_req: Request, res: Response) {
 }
 
 
+async function deleteChatById(req: Request, res: Response) {
+        const id = req.params.id
+        await Converstion.findByIdAndDelete(id)
+        return res.json({ message: "Conversation deleted successfully" })
+}
+
+
 async function chat(req: Request, res: Response) {
     const { content, model, id } = req.body
     const mappedContent = content.map((c: Message) => { return { role: c.role, content: c.text } })
@@ -46,7 +53,9 @@ async function chat(req: Request, res: Response) {
     // Add Bot complete response to the converstion
     content.push(chatBot)
     // DB mutation Creation
-    if (!id) await Converstion.create({ title: mappedContent[0].content.trim(), content: content })
+    if (!id){
+        await Converstion.create({ title: mappedContent[0].content.trim(), content: content })
+    } 
     // DB mutation Update
     else await Converstion.findByIdAndUpdate(id, { $set: { content: content } })
 
@@ -54,4 +63,4 @@ async function chat(req: Request, res: Response) {
 }
 
 
-export { chat, history, show }
+export { chat, history, show, deleteChatById }
