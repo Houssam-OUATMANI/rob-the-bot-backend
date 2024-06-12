@@ -9,6 +9,12 @@
     "@types/express": "^4.17.21",
     "@types/mongoose": "^5.11.97"
   },
+  "author": {
+    "name": "Houssam OUATMANI",
+    "email": "ouatmanihoussam@gmail.com",
+    "url" : "https://github.com/Houssam-OUATMANI/rob-the-bot-backend"
+  },
+  
   "scripts": {
     "dev": "bun --watch ."
   },
