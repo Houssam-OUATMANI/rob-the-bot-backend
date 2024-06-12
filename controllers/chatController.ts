@@ -34,9 +34,6 @@ async function chat(req: Request, res: Response) {
     const firstModel = (await ollama.list()).models.map(m => m.model)[0]
     const chatBot: Message = { id: Date.now(), author: model || firstModel, text: "", date: new Date(), role: "assistant" }
 
-    res.setHeader("Content-Type", "text/plain; charset=utf-8")
-    res.setHeader("Transfer-Encoding", "chunked")
-
     // Bot response as AsyncGenerator
     const response = await ollama.chat({
         model: model || firstModel,
@@ -54,7 +51,9 @@ async function chat(req: Request, res: Response) {
     content.push(chatBot)
     // DB mutation Creation
     if (!id){
-        await Converstion.create({ title: mappedContent[0].content.trim(), content: content })
+        const newConversation = await Converstion.create({ title: mappedContent[0].content.trim(), content: content })
+        res.setHeader('x-new-chat-id', newConversation._id.toString())
+      
     } 
     // DB mutation Update
     else await Converstion.findByIdAndUpdate(id, { $set: { content: content } })

@@ -8,7 +8,11 @@ import { listModels } from "#controllers/modelController"
 
 const app = express()
 dotenv.config()
-app.use(cors())
+app.use(cors({
+    origin: "*",
+    allowedHeaders : ["*"],
+    exposedHeaders : ["x-new-chat-id"]
+}))
 app.use(express.json())
 
 
