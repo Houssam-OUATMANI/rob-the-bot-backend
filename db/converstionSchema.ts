@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose"
 
-const converstionSchema = new Schema({
+const conversationSchema = new Schema({
     title: String,
     content: [
         {
@@ -15,4 +15,4 @@ const converstionSchema = new Schema({
 }, { timestamps: true })
 
 
-export const Converstion = model("Converstion", converstionSchema)
+export const Conversation = model("Conversation", conversationSchema)

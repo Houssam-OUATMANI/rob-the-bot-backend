@@ -3,25 +3,30 @@ import cors from "cors"
 import dotenv from "dotenv"
 
 import { dbConnect } from "#db/connect"
-import { show, history, chat, deleteChatById } from "#controllers/chatController"
+import { show, history, chat, deleteChatById, deleteAllChats, getLastChat } from "#controllers/chatController"
 import { listModels } from "#controllers/modelController"
 
 const app = express()
 dotenv.config()
 app.use(cors({
-    origin: "*",
-    allowedHeaders : ["*"],
-    exposedHeaders : ["x-new-chat-id"]
+    origin: ["http://localhost:5173"],
+    //credentials : true,
+    exposedHeaders : "x-chat-id"
 }))
+
 app.use(express.json())
 
 
 //#region Routes
 app.get("/models", listModels)
+app.get("/chat/last", getLastChat)
 app.get("/chat/:id", show)
 app.get("/chats/history", history)
 app.post("/chat", chat)
+app.delete("/chats", deleteAllChats)
 app.delete("/chat/:id", deleteChatById)
+
+
 //#endregion 
 
 

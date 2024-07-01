@@ -1,31 +1,45 @@
 
 import type { Request, Response } from "express"
 import ollama from "ollama"
-import { Converstion } from "#db/converstionSchema"
+import { Conversation } from "#db/converstionSchema"
 import type { Message } from "#types/index"
 
 
 // Particular Conversation
 async function show(req: Request, res: Response) {
     const id = req.params.id
-    const converstion = await Converstion.findById(id)
+    const converstion = await Conversation.findById(id)
     if (!converstion) return res.status(404).json({ error: "Conversation not found" })
+
     return res.json(converstion)
 }
 
 // History
 async function history(_req: Request, res: Response) {
     // DESC ORDER
-    const converstions = await Converstion.find().select("title").sort({ createdAt: -1 })
+    const converstions = await Conversation.find().select("title").sort({ createdAt: -1 })
     return res.json(converstions)
 }
 
 
 async function deleteChatById(req: Request, res: Response) {
-        const id = req.params.id
-        await Converstion.findByIdAndDelete(id)
-        return res.json({ message: "Conversation deleted successfully" })
+    const id = req.params.id
+    await Conversation.findByIdAndDelete(id)
+    return res.json({ message: "Conversation deleted successfully" })
 }
+
+
+async function deleteAllChats(req: Request, res: Response) {
+    await Conversation.deleteMany({})
+    return res.json({ message: "All Conversations deleted successfully" })
+}
+
+async function getLastChat(req: Request, res: Response) {
+    const conversation = await Conversation.findOne().sort({ _id: -1 }).select("_id");
+    if (!conversation) return res.status(404).json({ error: "No Chat Found"})
+    return res.json(conversation)    
+}
+
 
 
 async function chat(req: Request, res: Response) {
@@ -41,7 +55,6 @@ async function chat(req: Request, res: Response) {
         messages: mappedContent,
         stream: true
     })
-
     // Stream To The Client
     for await (const part of response) {
         chatBot.text += part.message.content
@@ -50,16 +63,16 @@ async function chat(req: Request, res: Response) {
     // Add Bot complete response to the converstion
     content.push(chatBot)
     // DB mutation Creation
-    if (!id){
-        const newConversation = await Converstion.create({ title: mappedContent[0].content.trim(), content: content })
-        res.setHeader('x-new-chat-id', newConversation._id.toString())
-      
-    } 
+    if (!id) {
+        // TODO FIX CUSTOM HEADER RESPONSE (DIFFERENT ORIGIN)
+        const newConversation = await Conversation.create({ title: mappedContent[0].content.trim(), content: content })
+        res.setHeader('x-chat-id', newConversation._id.toString())
+    }
     // DB mutation Update
-    else await Converstion.findByIdAndUpdate(id, { $set: { content: content } })
+    else await Conversation.findByIdAndUpdate(id, { $set: { content: content } })
 
-    res.end()
+    return res.end()
 }
 
 
-export { chat, history, show, deleteChatById }
+export { chat, history, show, deleteChatById, deleteAllChats, getLastChat }
